@@ -185,8 +185,14 @@ Contributions are welcome! Please fork the repository and submit pull requests f
 
 ## 🎥 Video & Audio
 
-For an in-depth explanation, check out our audio walkthrough. (If using GitHub Pages or an external link, add a clickable link below.)
+For an in-depth explanation, check out the demo video below:
 
-[Listen to the Explanation Audio](./assets/audio.mp3)
+<p align="center">
+  <a href="https://www.youtube.com/shorts/oui5RJuRm28" target="_blank">
+    <img src="app/src/main/res/drawable/ic_vault.png" alt="Watch the Video" width="500"/>
+  </a>
+</p>
 
+Alternatively, you can watch it on YouTube:  
+👉 [Watch the Video](https://www.youtube.com/shorts/oui5RJuRm28)
 ---
