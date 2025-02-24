@@ -5,14 +5,14 @@ config:
 ---
 flowchart TD
     A["Plaintext Data"] --> B["Get Secret Key from Keystore"]
-    B --> C["Initialize Cipher in ENCRYPT_MODE\n- AES/GCM/NoPadding"]
+    B --> C["Initialize Cipher in ENCRYPT_MODE - AES/GCM/NoPadding"]
     C --> D["Auto-generate IV - 12 bytes"]
     D --> E["Encrypt Data\nProduces Ciphertext + Auth Tag"]
     E --> F["Combine IV + Ciphertext"]
     F --> G["Encode Combined Data to Base64"]
     H["Encrypted Data in Base64"] --> I["Decode Base64 to retrieve Combined Data"]
     I --> J["Extract IV - first 12 bytes"] & K["Extract Ciphertext + Auth Tag"]
-    J --> M["Initialize Cipher in DECRYPT_MODE\nwith GCMParameterSpec"]
+    J --> M["Initialize Cipher in DECRYPT_MODE with GCMParameterSpec"]
     K --> M
     L["Get Secret Key from Keystore"] --> M
     M --> N["Decrypt Ciphertext to recover Plaintext"]
