@@ -1,3 +1,11 @@
+
+### 🔊 Click to Hear Explanation
+
+<audio controls>
+  <source src="audio.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
 ### 🔐 Encryption & Key Management Overview
 
 This project uses AES encryption in GCM mode (AES/GCM/NoPadding) to ensure both confidentiality and data integrity. Below is a detailed explanation of how the secret key and the overall encryption/decryption setup work, with visual cues provided by icons.
