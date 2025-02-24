@@ -187,10 +187,23 @@ Contributions are welcome! Please fork the repository and submit pull requests f
 
 For an in-depth explanation, check out the demo video below:
 
-[![Watch the Video](app/src/main/res/drawable/ic_vault.png)](./demo.mp4)
+<p align="center">
+  <a href="./demo.mp4" target="_blank">
+    <img src="app/src/main/res/drawable/ic_vault.png" alt="Watch the Video" width="150"/>
+  </a>
+</p>
 
-👉 [Download & Watch the Video](./demo.mp4)
+👉 <a href="./demo.mp4" target="_blank">Download & Watch the Video</a>
 
-Alternatively, you can watch it on YouTube:  
-👉 [Watch the Video](https://www.youtube.com/shorts/oui5RJuRm28)
+### Audio Walkthrough
+
+<p align="center">
+  <audio controls>
+    <source src="./demo.mp4" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+</p>
+
+
+
 ---
