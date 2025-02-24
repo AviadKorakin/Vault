@@ -187,11 +187,9 @@ Contributions are welcome! Please fork the repository and submit pull requests f
 
 For an in-depth explanation, check out the demo video below:
 
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=Zy3WGDr95Jc">
-    <img src="https://img.youtube.com/vi/Zy3WGDr95Jc/0.jpg" alt="Watch the trailer" width="600">
-  </a>
-</p>
+[![Watch the Video](app/src/main/res/drawable/ic_vault.png)](./demo.mp4)
+
+👉 [Download & Watch the Video](./demo.mp4)
 
 Alternatively, you can watch it on YouTube:  
 👉 [Watch the Video](https://www.youtube.com/shorts/oui5RJuRm28)
