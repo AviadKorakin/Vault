@@ -108,14 +108,3 @@ flowchart TD
     classDef encryption fill:#DDF,stroke:#333,stroke-width:1.5px,stroke-dasharray: 5 5, color:#000;
     classDef decryption fill:#FDD,stroke:#333,stroke-width:1.5px,stroke-dasharray: 5 5, color:#000;
 ```
-
----
-
-### How to Use
-
-- **For Markdown Files:**  
-  Wrap the Mermaid code in triple backticks with the `mermaid` tag as shown.
-- **In Documentation Tools:**  
-  Paste this section into your README or documentation platform that supports Mermaid diagrams (e.g., GitHub, GitLab, or Mermaid Live Editor).
-
-This enhanced README section now includes icons throughout the explanation and in the diagram, providing visual cues to help understand the encryption and key management processes.
