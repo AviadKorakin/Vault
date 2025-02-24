@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MyVault</string>
+    <string name="dialog_icon_desc">Valut</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="enter_subject">Enter Subject</string>
+    <string name="subject">Subject</string>
+    <string name="copy">copy</string>
+</resources>
