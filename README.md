@@ -8,9 +8,9 @@ flowchart TD
     subgraph Encryption_Process [Encryption Process]
         A["Plaintext Data"]
         B["Get Secret Key from Keystore"]
-        C["Initialize Cipher in ENCRYPT_MODE\n- AES/GCM/NoPadding"]
+        C["Initialize Cipher in ENCRYPT_MODE- AES/GCM/NoPadding"]
         D["Auto-generate IV - 12 bytes"]
-        E["Encrypt Data\nProduces Ciphertext + Auth Tag"]
+        E["Encrypt Data - Produces Ciphertext + Auth Tag"]
         F["Combine IV + Ciphertext"]
         G["Encode Combined Data to Base64"]
     end
@@ -22,7 +22,7 @@ flowchart TD
         J["Extract IV - first 12 bytes"]
         K["Extract Ciphertext + Auth Tag"]
         L["Get Secret Key from Keystore"]
-        M["Initialize Cipher in DECRYPT_MODE\nwith GCMParameterSpec"]
+        M["Initialize Cipher in DECRYPT_MODE with GCMParameterSpec"]
         N["Decrypt Ciphertext to recover Plaintext"]
     end
 
