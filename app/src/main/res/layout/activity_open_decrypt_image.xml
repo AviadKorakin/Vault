@@ -8,17 +8,20 @@
     android:background="@android:color/transparent">
 
     <!-- Full-screen ImageView to display the decrypted image -->
+
+    <!-- Optional: Toolbar at the top for navigation/back button -->
     <ImageView
         android:id="@+id/fullScreenImageView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitCenter"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
-    <!-- Optional: Toolbar at the top for navigation/back button -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"

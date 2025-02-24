@@ -46,7 +46,11 @@ public class ProcessTextActivity extends AppCompatActivity {
         if (Intent.ACTION_PROCESS_TEXT.equals(intent.getAction())) {
             selectedText = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT);
             if (selectedText != null) {
-                // Instead of auto-saving, show a custom dialog to ask for a subject.
+                showSubjectDialog(selectedText);
+            }
+        } else if (Intent.ACTION_SEND.equals(intent.getAction())) {
+            selectedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+            if (selectedText != null) {
                 showSubjectDialog(selectedText);
             }
         } else {

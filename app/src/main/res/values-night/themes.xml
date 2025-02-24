@@ -3,6 +3,7 @@
     <style name="Base.Theme.MyVault" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="cardBackgroundColor">@color/black</item>
     </style>
     <style name="TransparentActivityTheme" parent="Base.Theme.MyVault">
         <item name="android:windowIsTranslucent">true</item>

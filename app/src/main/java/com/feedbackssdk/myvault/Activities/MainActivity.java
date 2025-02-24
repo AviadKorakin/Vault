@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void fallbackToPIN() {
         KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
-        if (keyguardManager.isDeviceSecure()) {
+        if (keyguardManager != null && keyguardManager.isDeviceSecure()) {
             Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(
                     "Device Authentication Required",
                     "Authenticate using your PIN, password, or pattern");
@@ -132,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 deviceCredentialLauncher.launch(intent);
             }
         } else {
+            Toast.makeText(this, "Sorry, in order to work with this application you have to add minimal secure to your device", Toast.LENGTH_LONG).show();
             finishAffinity();
         }
     }
