@@ -8,7 +8,20 @@ https://github.com/user-attachments/assets/cdd2a5a3-9d6e-4e71-b553-a0847f4e9b82
 
 ### 🔐 Encryption & Key Management Overview
 
-This project uses AES encryption in GCM mode (AES/GCM/NoPadding) to ensure both confidentiality and data integrity. Below is a detailed explanation of how the secret key and the overall encryption/decryption setup work, with visual cues provided by icons.
+This project uses AES encryption in GCM mode (AES/GCM/NoPadding) to ensure both confidentiality and data integrity. Below is a detailed explanation of how the secret key and the overall encryption/decryption setup work.
+
+## 📖 Overview of Cipher, GCM, and NoPadding
+
+- **Cipher:**  
+  A cipher is a cryptographic algorithm that transforms plaintext into ciphertext (encryption) and back again (decryption) using a secret key. In Java and Android, the `Cipher` class provided by the Java Cryptography Architecture (JCA) is used to perform these operations securely.
+
+- **GCM (Galois/Counter Mode):**  
+  GCM is an advanced mode of operation for block ciphers. It not only encrypts the data but also produces an authentication tag that verifies data integrity. This means that with GCM, you get both confidentiality and integrity in one step, ensuring that any tampering with the ciphertext will be detected during decryption.
+
+- **NoPadding:**  
+  When using AES/GCM, the mode operates in a way that does not require padding of the plaintext, hence "NoPadding". Unlike some other encryption modes that add extra bytes (padding) to make the data fit a specific block size, GCM can securely handle plaintext of any length without additional padding.
+
+---
 
 #### 🔑 Secret Key Generation and Storage
 
