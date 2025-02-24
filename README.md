@@ -188,22 +188,9 @@ Contributions are welcome! Please fork the repository and submit pull requests f
 For an in-depth explanation, check out the demo video below:
 
 <p align="center">
-  <a href="./demo.mp4" target="_blank">
-    <img src="app/src/main/res/drawable/ic_vault.png" alt="Watch the Video" width="150"/>
+  <a href="https://www.youtube.com/watch?v=oui5RJuRm28">
+    <img src="https://img.youtube.com/vi/oui5RJuRm28/0.jpg" alt="Watch the trailer" width="600">
   </a>
 </p>
-
-👉 <a href="./demo.mp4" target="_blank">Download & Watch the Video</a>
-
-### Audio Walkthrough
-
-<p align="center">
-  <audio controls>
-    <source src="./demo.mp4" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
-</p>
-
-
 
 ---
