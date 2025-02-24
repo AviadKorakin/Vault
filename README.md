@@ -1,7 +1,3 @@
-Below is an enhanced README section that includes icons (emojis) both in the textual explanation and in the Mermaid diagram. You can copy and paste this section into your README file.
-
----
-
 ### 🔐 Encryption & Key Management Overview
 
 This project uses AES encryption in GCM mode (AES/GCM/NoPadding) to ensure both confidentiality and data integrity. Below is a detailed explanation of how the secret key and the overall encryption/decryption setup work, with visual cues provided by icons.
