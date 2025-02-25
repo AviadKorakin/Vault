@@ -1,4 +1,3 @@
-```markdown
 # GCM Protocol (Galois/Counter Mode) Documentation
 
 GCM (Galois/Counter Mode) is a widely used authenticated encryption mode that simultaneously provides confidentiality and data integrity. This document explains the GCM protocol in detail, its underlying components, and the flow of operations—with visual aids and icons to help students understand each step.
