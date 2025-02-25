@@ -63,10 +63,10 @@ This diagram gives a visual overview of the GCM protocol, showing how encryption
 ### 2. Preprocessing
 - **Hash Subkey (H):**  
   Compute the hash subkey by encrypting an all-zero 128-bit block:
-  ```
-H = AES(K, 0^128)
-  ```
-  This subkey is then used in the GHASH function.
+
+**H = AES(K, 0^128)**
+
+This subkey is then used in the GHASH function.
 
 ### 3. Encryption (CTR Mode)
 - **Block Division & Counter Generation:**  
