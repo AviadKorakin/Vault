@@ -1,5 +1,5 @@
 
-<img src="https://github.com/user-attachments/assets/94a5a034-e1bf-4efc-8b24-ad99bf4a5273" style="background-color: white; padding: 20px; border: 1px solid #ddd; border-radius: 5px;" alt="GCM Protocol Diagram">
+<img src="https://github.com/user-attachments/assets/154ca1b2-3864-46dd-b74c-db50fbe7f189" style="background-color: white; padding: 20px; border: 1px solid #ddd; border-radius: 5px;" alt="GCM Protocol Diagram">
 
 
 ## Explanation of the Diagram
