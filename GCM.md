@@ -1,73 +1,120 @@
+```markdown
+# GCM Protocol (Galois/Counter Mode) Documentation
 
-<img src="https://github.com/user-attachments/assets/94a5a034-e1bf-4efc-8b24-ad99bf4a5273" style="background-color: white; padding: 20px; border: 1px solid #ddd; border-radius: 5px;" alt="GCM Protocol Diagram">
-
-
-## Explanation of the Diagram
-
-This diagram provides a visual overview of the Galois/Counter Mode (GCM) protocol, illustrating how encryption and authentication are combined:
-
-- **Initialization Vector (IV) Integration:**  
-  The IV is used to derive the initial counter block. When the IV is 96 bits (the recommended length), it is concatenated with a fixed suffix (typically 31 zero bits followed by a 1) to form the starting counter value.
-
-- **Counter Mode Encryption (CTR):**  
-  The diagram shows how successive counter values are generated (using an increment function) and then encrypted with the block cipher (e.g., AES). The resulting keystream is XORed with the plaintext to produce the ciphertext.
-
-### 3. GHASH Authentication
-
-- **Purpose:**  
-  While encryption hides the content, GHASH ensures that the ciphertext and any additional authenticated data (AAD) have not been altered. In other words, it detects even the smallest changes made to the data during transmission.
-
-- **How It Works in Detail:**
-
-    1. **Data Preparation:**
-        - **Ciphertext and AAD Block Division:**  
-          After the plaintext is encrypted using counter mode (CTR), the resulting ciphertext is divided into 128-bit blocks. Similarly, any AAD (which might include header information or metadata) is also split into 128-bit blocks. If the last block of either the ciphertext or the AAD is shorter than 128 bits, it is padded with zeros.
-
-    2. **Generation of the Hash Subkey (H):**
-        - **Derivation:**  
-          A special value called the hash subkey `H` is produced by encrypting an all-zero 128-bit block with the encryption key using the block cipher (typically AES).
-          ```
-          H = AES(K, 0^128)
-          ```  
-          This subkey is fixed for the duration of the encryption and is used in all subsequent GHASH computations.
-
-    3. **Iterative Processing Using a Recurrence Relation:**
-        - **Sequential Computation:**  
-          The GHASH function processes each 128-bit block in a sequential manner using the following recurrence:
-          ```
-          Y0 = 0
-          Yi = (Yi-1 ⊕ Si) · H
-          ```
-          Here:
-            - `Si` represents the i-th 128-bit block from the combined data (first the AAD blocks, then the ciphertext blocks, and finally a block that encodes the bit lengths of both the AAD and ciphertext).
-            - `⊕` denotes the bitwise XOR operation.
-            - `·` denotes multiplication in the finite field GF(2^128).
-
-        - **Finite Field Multiplication (GF(2^128)):**  
-          In GF(2^128), the addition operation is performed using XOR, and multiplication is carried out modulo a fixed irreducible polynomial (commonly `x^128 + x^7 + x^2 + x + 1`). This means that the multiplication “mixes” the bits in a way that any change in input produces a completely different product.
-
-    4. **Combining into a Single Authentication Value:**
-        - **Final GHASH Output:**  
-          After processing all blocks, the final computed value (`Ym`) is a single 128-bit number that summarizes all the data. This value is highly sensitive to every bit of input, so even a minor alteration in the ciphertext or AAD will change the outcome.
-
-    5. **Tag Generation:**
-        - **Final Step:**  
-          The final GHASH output is then combined (typically using XOR) with an encrypted version of a counter block (derived from the IV). The result is truncated (to 128, 120, 112, 104, or 96 bits, based on the implementation) to produce the final authentication tag `T`.
-        - **Purpose of the Tag:**  
-          This tag is sent along with the ciphertext. During decryption, the recipient re-computes the GHASH value using the received ciphertext and AAD. If the recomputed tag matches the transmitted tag, it confirms both the integrity and authenticity of the data.
-
-- **Key Takeaways:**
-    - **Data Integrity Assurance:**  
-      Any tampering with the ciphertext or AAD will result in a different GHASH output, which in turn produces a mismatched authentication tag.
-    - **Efficient Parallel Processing:**  
-      The operations involved in GHASH (XOR and finite field multiplication) are highly parallelizable, making it suitable for high-throughput applications.
-    - **Unified Security Mechanism:**  
-      By integrating GHASH with counter mode encryption, GCM provides both confidentiality (through encryption) and integrity/authentication (through GHASH) in one cohesive framework.
-- **Output Combination:**  
-  The final output of GCM consists of the ciphertext along with the authentication tag, ensuring both confidentiality and integrity of the transmitted data.
-
-This integrated design allows GCM to provide authenticated encryption in a single pass over the data, supporting parallel processing for high throughput.
+GCM (Galois/Counter Mode) is a widely used authenticated encryption mode that simultaneously provides confidentiality and data integrity. This document explains the GCM protocol in detail, its underlying components, and the flow of operations—with visual aids and icons to help students understand each step.
 
 ---
 
-*The remainder of the document details the inner workings of GCM, including its mathematical basis, encryption process, and a Mermaid diagram illustrating the flow of operations.*
+## 📷 GCM Protocol Diagram
+
+<div style="text-align: center;">
+  <img src="https://github.com/user-attachments/assets/154ca1b2-3864-46dd-b74c-db50fbe7f189" style="background-color: white;" alt="GCM Protocol Diagram">
+</div>
+
+---
+
+## 📝 Explanation of the Diagram
+
+This diagram gives a visual overview of the GCM protocol, showing how encryption and authentication work together:
+
+- **🔑 Initialization Vector (IV) Integration:**  
+  The IV is a unique nonce used to derive the initial counter block. For optimal performance, a 96-bit IV is recommended. It is concatenated with a fixed suffix (typically 31 zero bits followed by a 1) to form the starting counter value.
+
+- **🔐 Counter Mode Encryption (CTR):**  
+  Successive counter blocks are generated by incrementing the initial counter value. Each counter block is encrypted using a block cipher (like AES), producing a pseudorandom keystream that is then XORed with the plaintext to generate the ciphertext.
+
+- **🛡️ GHASH Authentication:**  
+  In parallel with encryption, the ciphertext and any additional authenticated data (AAD) are fed into the GHASH function:
+  - **Data Preparation:** The ciphertext and AAD are split into 128-bit blocks (with padding applied if necessary).
+  - **Hash Subkey Generation:** A subkey `H` is computed by encrypting an all-zero 128-bit block with the encryption key.
+  - **Iterative Processing:** Starting with an initial value of zero, each data block is combined (using XOR) and multiplied by `H` in the finite field GF(2^128). This iterative process produces a single 128-bit authentication value.
+  - **Tag Formation:** This authentication value is then mixed with an encrypted counter block (derived from the IV) to form the final authentication tag.
+
+- **📦 Output Combination:**  
+  The final output includes both the ciphertext and the authentication tag. This ensures that the recipient can verify the data’s integrity and authenticity while decrypting it.
+
+---
+
+## 📚 Key Concepts
+
+- **Authenticated Encryption:**  
+  GCM offers both encryption (to protect the data's confidentiality) and authentication (to ensure the data has not been modified).
+
+- **Parallel Processing:**  
+  Both the counter mode encryption and GHASH computations are highly parallelizable, enabling high throughput—critical for modern network applications.
+
+- **Finite Field Arithmetic:**  
+  GHASH operates in GF(2^128) using operations such as XOR (for addition) and specialized multiplication modulo an irreducible polynomial (typically `x^128 + x^7 + x^2 + x + 1`). This mathematical approach ensures that even tiny changes in the input produce a dramatically different authentication output.
+
+---
+
+## ⚙️ Detailed Operation
+
+### 1. Inputs
+- **Secret Key (K):**  
+  The encryption key used with the block cipher (e.g., AES).
+- **Initialization Vector (IV):**  
+  A unique nonce (ideally 96 bits) that ensures each encryption operation is unique.
+- **Plaintext (P):**  
+  The original data to be encrypted.
+- **Additional Authenticated Data (AAD):**  
+  Data that is authenticated (its integrity is verified) but not encrypted (e.g., header information).
+
+### 2. Preprocessing
+- **Hash Subkey (H):**  
+  Compute the hash subkey by encrypting an all-zero 128-bit block:
+  ```
+H = AES(K, 0^128)
+  ```
+  This subkey is then used in the GHASH function.
+
+### 3. Encryption (CTR Mode)
+- **Block Division & Counter Generation:**  
+  The plaintext is split into 128-bit blocks. A counter is generated from the IV (as explained above) and incremented for each block.
+- **Keystream Generation:**  
+  Each counter block is encrypted with AES to generate a keystream.
+- **Ciphertext Production:**  
+  Each plaintext block is XORed with the corresponding keystream block, producing the ciphertext.
+
+### 4. GHASH Authentication
+- **Purpose:**  
+  GHASH is used to ensure that the ciphertext and AAD remain unaltered.
+- **Detailed Process:**  
+  1. **Data Preparation:**  
+     - The ciphertext and AAD are divided into 128-bit blocks. Incomplete blocks are padded with zeros.
+  2. **Hash Subkey Calculation:**  
+     - The hash subkey `H` (calculated earlier) is used for all subsequent operations.
+  3. **Iterative Computation:**  
+     - Begin with `Y0 = 0`. For each block `Si` (which includes all AAD blocks, ciphertext blocks, and a block encoding the lengths of AAD and ciphertext), compute:
+       ```
+       Yi = (Yi-1 ⊕ Si) · H
+       ```
+       where the multiplication is carried out in the finite field GF(2^128).
+  4. **Authentication Tag Generation:**  
+     - The final value, after processing all blocks, is combined with an encrypted counter block (derived from the IV) and truncated to produce the authentication tag `T`.
+
+### 5. Output
+- **Ciphertext (C):**  
+  The encrypted version of the plaintext.
+- **Authentication Tag (T):**  
+  A tag that verifies the integrity and authenticity of both the ciphertext and AAD.
+
+---
+
+## 🗺️ Mermaid Diagram of GCM Flow
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Input: Key, IV, Plaintext, AAD]
+    B --> C[Compute Hash Subkey<br>H = AES(K, 0^128)]
+    C --> D[Divide Plaintext into 128-bit Blocks]
+    D --> E[Generate Counter Blocks<br>from IV & Increment Function]
+    E --> F[Encrypt Counters with AES<br>to Create Keystream]
+    F --> G[Produce Ciphertext:<br>P XOR Keystream]
+    G --> H[Process AAD & Ciphertext<br>through GHASH]
+    H --> I[Combine GHASH Output with<br>Encrypted Counter to Form Tag]
+    I --> J[Output: Ciphertext & Authentication Tag]
+    J --> K[End]
+```
+
+
