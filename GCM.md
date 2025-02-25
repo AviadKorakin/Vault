@@ -1,5 +1,5 @@
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/GCM-Galois_Counter_Mode_with_IV.svg/545px-GCM-Galois_Counter_Mode_with_IV.svg.png" alt="GCM Protocol Diagram" style="background-color: white;">
+<img src="https://upload.wikimedia.org/wikipedia/commons/2/25/GCM-Galois_Counter_Mode_with_IV.svg" alt="GCM Protocol Diagram" style="background-color: white;">
 
 
 ## Explanation of the Diagram
