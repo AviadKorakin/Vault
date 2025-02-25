@@ -105,7 +105,7 @@ This subkey is then used in the GHASH function.
 ```mermaid
 flowchart TD
     A[Start] --> B[Input: Key, IV, Plaintext, AAD]
-    B --> C[Compute Hash Subkey<br>H = AES- [K, 0^128]]
+    B --> C[Compute Hash Subkey<br>H = AES- K, 0^128]
     C --> D[Divide Plaintext into 128-bit Blocks]
     D --> E[Generate Counter Blocks<br>from IV & Increment Function]
     E --> F[Encrypt Counters with AES<br>to Create Keystream]
