@@ -75,10 +75,6 @@ This subkey is then used in the GHASH function.
 - **Ciphertext Production:**  
   Each plaintext block is XORed with the corresponding keystream block, producing the ciphertext.
 
-Below is the revised, beginner-friendly explanation with an added section that explains what GF(2^128) is:
-
----
-
 ### 4. GHASH Authentication
 
 **Purpose (Why We Need GHASH):**  
