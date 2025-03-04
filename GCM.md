@@ -50,14 +50,18 @@ This diagram gives a visual overview of the GCM protocol, showing how encryption
 ## ⚙️ Detailed Operation
 
 ### 1. Inputs
+
 - **Secret Key (K):**  
   The encryption key used with the block cipher (e.g., AES).
+
 - **Initialization Vector (IV):**  
   A unique nonce (ideally 96 bits) that ensures each encryption operation is unique.
+
 - **Plaintext (P):**  
   The original data to be encrypted.
+
 - **Additional Authenticated Data (AAD):**  
-  Data that is authenticated (its integrity is verified) but not encrypted (e.g., header information).
+  Data that is not encrypted but is still authenticated. AAD typically includes protocol headers, metadata, timestamps, or any other associated information that must remain in plaintext while still being protected against tampering. During the authentication process, AAD is processed alongside the ciphertext within the GHASH function so that any modifications to this data can be detected upon decryption.
 
 ### 2. Preprocessing
 - **Hash Subkey (H):**  
@@ -90,30 +94,61 @@ Think of GHASH like a “fingerprint” maker for your encrypted data. It guaran
    - Earlier in the GCM process, we generated a special key called `H`. GHASH uses this key for all its calculations.  
    - You can think of `H` as a unique ingredient that ensures your “fingerprint” is tied to the main encryption key.
 
-3. **Iterative Computation**  
-   - Start with an initial value, `Y₀ = 0`.  
-   - For each 128-bit block \(S_i\) (whether it’s part of the AAD or the ciphertext, plus one extra block that stores their lengths), do this:
-     \[
-       Y_i = (Y_{i-1} \oplus S_i) \cdot H
-     \]
-     - **\(\oplus\)** means XOR, which is like a bitwise “add without carrying.”
-     - **\(\cdot\)** means multiplication in a special math system called **GF(2^128)** (Galois Field).
-
-   - **What is GF(2^128)?**  
-     - **GF(2^128)** is a finite field containing exactly \(2^{128}\) elements, where each element is represented as a 128-bit binary number.  
-     - **Addition in GF(2^128):**  
-       Instead of normal addition, numbers are added using the XOR operation. This means that each bit is added without carrying over to the next bit.  
-     - **Multiplication in GF(2^128):**  
-       Multiplication is done by treating the 128-bit numbers as polynomials with coefficients in GF(2) (each coefficient is 0 or 1). The product is then reduced modulo an irreducible polynomial (commonly \(x^{128} + x^7 + x^2 + x + 1\)), ensuring the result remains a 128-bit number.  
-     - **Why It Matters:**  
-       This special kind of multiplication mixes the bits thoroughly so that even a tiny change in the input produces a completely different result—a property that is essential for detecting any tampering with the data.
-
-4. **Authentication Tag Generation**  
-   - After processing every block, the final GHASH result (the combined fingerprint) is **XORed** with an **encrypted counter block** (derived from the IV).  
-   - The output of this step is then shortened (truncated) to produce the final **authentication tag** (often called “tag” or “ICV”).  
-   - When the receiver decrypts, they redo this GHASH process; if the tag they get matches the one sent, they know nothing was changed in transit.
+Below is the revised Markdown content with fixes to the functions so that the math displays correctly. In this version, I’ve replaced the display math delimiters with double dollar signs for better compatibility, while keeping the code and structure intact:
 
 ---
+
+### 1. Inputs
+
+- **Secret Key (K):**  
+  The encryption key used with the block cipher (e.g., AES).
+
+- **Initialization Vector (IV):**  
+  A unique nonce (ideally 96 bits) that ensures each encryption operation is unique.
+
+- **Plaintext (P):**  
+  The original data to be encrypted.
+
+- **Additional Authenticated Data (AAD):**  
+  Data that is not encrypted but is still authenticated. AAD typically includes protocol headers, metadata, timestamps, or any other associated information that must remain in plaintext while still being protected against tampering. During the authentication process, AAD is processed alongside the ciphertext within the GHASH function so that any modifications to this data can be detected upon decryption.
+
+---
+
+### 3. Iterative Computation
+- **Initial Value:**  
+  Start with an initial value, `Y₀ = 0`.
+
+- **Block Processing:**  
+  For each 128-bit block \(S_i\) (covering blocks derived from both the AAD and the ciphertext, plus one extra block that encodes their lengths), compute:
+  
+  $$
+  Y_i = (Y_{i-1} \oplus S_i) \cdot H
+  $$
+
+  where:
+  - **\(\oplus\)** represents the XOR operator (a bitwise “add without carrying”).
+  - **\(\cdot\)** denotes multiplication in the finite field GF(2^128).
+
+- **Understanding GF(2^128):**
+  - **Finite Field:**  
+    GF(2^128) is a finite field containing exactly \(2^{128}\) elements, where each element is represented as a 128-bit binary number.
+  - **Addition in GF(2^128):**  
+    Instead of standard addition, numbers are added using the XOR operation—each bit is added without carrying.
+  - **Multiplication in GF(2^128):**  
+    Multiplication is performed by treating the 128-bit numbers as polynomials with coefficients in GF(2) (each coefficient being 0 or 1). The resulting product is then reduced modulo an irreducible polynomial (commonly \(x^{128} + x^7 + x^2 + x + 1\)), ensuring the result remains a 128-bit number.
+  - **Why It Matters:**  
+    This method thoroughly mixes the bits so that even a tiny change in the input produces a dramatically different output—a key property for detecting any tampering with the data.
+
+---
+
+### 4. Authentication Tag Generation
+- After processing every block, the final GHASH result (the combined fingerprint) is **XORed** with an **encrypted counter block** (derived from the IV).
+- The output of this step is then shortened (truncated) to produce the final **authentication tag** (often called “tag” or “ICV”).
+- When the receiver decrypts, they re-run the GHASH process; if the tag they compute matches the one sent, it verifies that the data has not been altered.
+
+---
+
+This updated version should now display the functions correctly in your file.
 
 ### 5. Output
 
