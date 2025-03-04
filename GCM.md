@@ -126,8 +126,8 @@ Below is the revised Markdown content with fixes to the functions so that the ma
   $$
 
   where:
-  - **\(\oplus\)** represents the XOR operator (a bitwise “add without carrying”).
-  - **\(\cdot\)** denotes multiplication in the finite field GF(2^128).
+  - **$ \oplus $** represents the XOR operator (a bitwise “add without carrying”).
+  - **$ \cdot $** denotes multiplication in the finite field GF(2^128).
 
 - **Understanding GF(2^128):**
   - **Finite Field:**  
