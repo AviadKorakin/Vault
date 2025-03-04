@@ -63,38 +63,7 @@ This diagram gives a visual overview of the GCM protocol, showing how encryption
 - **Additional Authenticated Data (AAD):**  
   Data that is not encrypted but is still authenticated. AAD typically includes protocol headers, metadata, timestamps, or any other associated information that must remain in plaintext while still being protected against tampering. During the authentication process, AAD is processed alongside the ciphertext within the GHASH function so that any modifications to this data can be detected upon decryption.
 
-### 2. Preprocessing
-- **Hash Subkey (H):**  
-  Compute the hash subkey by encrypting an all-zero 128-bit block:
-
-**H = AES(K, $$0^{128}$$)**
-
-This subkey is then used in the GHASH function.
-
-Below is an updated and fixed version of the data flow documentation for both the CTR mode encryption and the GHASH authentication process, including the length (len(A) and len(C)) calculations:
-
----
-
-### 3. Encryption (CTR Mode)
-
-**Encryption using CTR Mode proceeds as follows:**
-
-1. **Block Division & Counter Generation:**  
-   The plaintext is divided into 128-bit blocks. A counter block is generated from the Initialization Vector (IV) (typically 96 bits combined with a fixed suffix) and is incremented for each block.
-
-2. **Keystream Generation:**  
-   Each counter block is encrypted with AES to produce a pseudorandom keystream block.
-
-3. **Ciphertext Production:**  
-   Each plaintext block is XORed with the corresponding keystream block (using the XOR operator, denoted by \( \oplus \)) to produce the ciphertext block.
-
----
-
-Below is the revised documentation using double dollar signs for all math expressions, so that GitHub will render the equations correctly.
-
----
-
-### 3. Encryption (CTR Mode)
+### 2. Encryption (CTR Mode)
 
 **Encryption using CTR Mode proceeds as follows:**
 
@@ -108,8 +77,7 @@ Below is the revised documentation using double dollar signs for all math expres
    Each plaintext block is XORed with the corresponding keystream block to produce the ciphertext block. This is represented as:  
    $$C_i = P_i \oplus \text{Keystream}_i$$
 
-
-### 4. GHASH Authentication
+### 3. GHASH Authentication
 
 **Purpose (Why We Need GHASH):**  
 GHASH functions as a “fingerprint” for your encrypted data and any associated data (AAD). It ensures that if even a single bit of the ciphertext or AAD is altered, the final computed fingerprint (and hence the authentication tag) will not match, allowing the receiver to detect tampering.
@@ -160,7 +128,7 @@ This revised documentation clarifies both the encryption (CTR mode) flow and the
 
 
 
-### 5. Output
+### 4. Output
 
 - **Ciphertext (C):**  
   The encrypted version of the original plaintext. If an attacker can’t break the encryption key, they can’t read the contents.
