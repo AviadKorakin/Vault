@@ -150,5 +150,25 @@ flowchart TD
     I --> J[Output: Ciphertext & Authentication Tag]
     J --> K[End]
 ```
+Here are some key points outlining why GCM is an excellent encryption mode for Android and how it compares favorably to plain CTR mode:
 
+- **Authenticated Encryption:**  
+  - GCM provides both confidentiality and integrity in a single pass. This means that it not only encrypts the data but also verifies that it hasn’t been tampered with, whereas CTR mode only offers encryption.
+
+- **Built-in Data Integrity:**  
+  - GCM includes an authentication tag derived from the GHASH function. This tag helps detect any modifications to the ciphertext or associated data (AAD), making it more robust against active attacks compared to CTR mode which lacks inherent integrity checks.
+
+- **Performance Efficiency:**  
+  - Both GCM and CTR modes are highly parallelizable, but GCM’s integrated authentication can be more efficient since it eliminates the need for a separate MAC (Message Authentication Code) calculation that would otherwise be required with CTR.
+
+- **Hardware Acceleration:**  
+  - Modern Android devices often include hardware support for AES operations. GCM can leverage these capabilities to perform fast and secure encryption/decryption while keeping power consumption low.
+
+- **Simplicity and Standardization:**  
+  - GCM is standardized (e.g., in NIST SP 800-38D) and widely used in secure communication protocols. This extensive adoption provides confidence in its security and interoperability on Android and other platforms.
+
+- **Robust Against Common Attacks:**  
+  - By combining counter mode encryption with a strong authentication mechanism (GHASH), GCM helps protect against common vulnerabilities such as chosen-ciphertext attacks that CTR mode might be susceptible to if used without additional integrity measures.
+
+In summary, GCM is generally better than pure CTR mode for Android because it not only encrypts data efficiently but also ensures data authenticity and integrity without requiring additional separate mechanisms.
 
