@@ -128,7 +128,7 @@ Below is the revised Markdown content with fixes to the functions so that the ma
 - **$$\cdot$$** denotes multiplication in the finite field GF(2^128).
 
 
-- **Understanding GF($$2^128$$):**
+- **Understanding GF($$2^(128)$$):**
   - **Finite Field:**  
     GF($$2^128$$) is a finite field containing exactly $$2^128$$) elements, where each element is represented as a 128-bit binary number.
   - **Addition in GF($$2^128$$):**  
