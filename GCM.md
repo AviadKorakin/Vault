@@ -61,7 +61,7 @@ This diagram gives a visual overview of the GCM protocol, showing how encryption
   The original data to be encrypted.
 
 - **Additional Authenticated Data (AAD):**  
-  Data that is not encrypted but is still authenticated. AAD typically includes protocol headers, metadata, timestamps, or any other associated information that must remain in plaintext while still being protected against tampering. During the authentication process, AAD is processed alongside the ciphertext within the GHASH function so that any modifications to this data can be detected upon decryption, **in Our Program we can see that share the image 3rd party using aad timestamp to validate its being opened around 15 mins from sending**.
+  Data that is not encrypted but is still authenticated. AAD typically includes protocol headers, metadata, timestamps, or any other associated information that must remain in plaintext while still being protected against tampering. During the authentication process, AAD is processed alongside the ciphertext within the GHASH function so that any modifications to this data can be detected upon decryption, **in Our Program we can see that share the image 3rd party using aad timestamp to validate its being opened around 15 mins from sending**, if itsnt set then AAD is simply treated as an empty byte array.
 
 ### 2. Preprocessing
 - **Hash Subkey (H):**  
