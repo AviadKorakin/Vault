@@ -128,13 +128,13 @@ Below is the revised Markdown content with fixes to the functions so that the ma
 - **$$\cdot$$** denotes multiplication in the finite field GF(2^128).
 
 
-- **Understanding GF($$2^(128)$$):**
+- **Understanding GF($$2^{128}$$):**
   - **Finite Field:**  
-    GF($$2^128$$) is a finite field containing exactly $$2^128$$) elements, where each element is represented as a 128-bit binary number.
-  - **Addition in GF($$2^128$$):**  
+    GF($$2^{128}$$) is a finite field containing exactly $$2^128$$) elements, where each element is represented as a 128-bit binary number.
+  - **Addition in GF($$2^{128}$$):**  
     Instead of standard addition, numbers are added using the XOR operation—each bit is added without carrying.
-  - **Multiplication in GF(2^128):**  
-    Multiplication is performed by treating the 128-bit numbers as polynomials with coefficients in GF(2) (each coefficient being 0 or 1). The resulting product is then reduced modulo an irreducible polynomial (commonly \(x^{128} + x^7 + x^2 + x + 1\)), ensuring the result remains a 128-bit number.
+  - **Multiplication in GF($$2^{128}$$):**  
+    Multiplication is performed by treating the 128-bit numbers as polynomials with coefficients in GF(2) (each coefficient being 0 or 1). The resulting product is then reduced modulo an irreducible polynomial (commonly $$x^{128} + x^7 + x^2 + x + 1$$), ensuring the result remains a 128-bit number.
   - **Why It Matters:**  
     This method thoroughly mixes the bits so that even a tiny change in the input produces a dramatically different output—a key property for detecting any tampering with the data.
 
