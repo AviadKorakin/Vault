@@ -90,6 +90,27 @@ Below is an updated and fixed version of the data flow documentation for both th
 
 ---
 
+Below is the revised documentation using double dollar signs for all math expressions, so that GitHub will render the equations correctly.
+
+---
+
+### 3. Encryption (CTR Mode)
+
+**Encryption using CTR Mode proceeds as follows:**
+
+1. **Block Division & Counter Generation:**  
+   The plaintext is divided into 128-bit blocks. A counter block is generated from the Initialization Vector (IV) (typically 96 bits combined with a fixed suffix) and is incremented for each block.
+
+2. **Keystream Generation:**  
+   Each counter block is encrypted with AES to produce a pseudorandom keystream block.
+
+3. **Ciphertext Production:**  
+   Each plaintext block is XORed with the corresponding keystream block to produce the ciphertext block. This is represented as:  
+   $$
+   C_i = P_i \oplus \text{Keystream}_i
+   $$
+
+
 ### 4. GHASH Authentication
 
 **Purpose (Why We Need GHASH):**  
@@ -101,49 +122,51 @@ GHASH functions as a “fingerprint” for your encrypted data and any associate
    - **Block Splitting:**  
      Both the ciphertext and any AAD (for example, protocol headers) are split into 128-bit blocks. If the final block in either sequence is shorter than 128 bits, it is padded with zeros.
    - **Length Block:**  
-     An extra block is appended that encodes the bit-lengths of the AAD and ciphertext:
+     An extra block is appended that encodes the bit-lengths of the AAD and the ciphertext. This extra block is represented as:  
      $$
-     \text{len}(A) \parallel \text{len}(C)
-     $$
-     where the first 64 bits represent the length of the AAD in bits, and the next 64 bits represent the length of the ciphertext in bits.
+     \text{len}(A) \, \| \, \text{len}(C)
+     $$  
+     where the first 64 bits represent the length of the AAD in bits and the next 64 bits represent the length of the ciphertext in bits.
 
 2. **Hash Subkey Calculation:**  
-   A hash subkey \( H \) is computed by encrypting an all-zero 128-bit block with the AES key:
+   A hash subkey $$H$$ is computed by encrypting an all-zero 128-bit block with the AES key:  
    $$
    H = \text{AES}(K, 0^{128})
-   $$
+   $$  
    This subkey is then used throughout the GHASH computation.
 
 3. **Iterative Computation:**  
    - **Initialization:**  
-     Start with an initial accumulator \( Y_0 = 0 \).
+     Start with an initial accumulator:  
+     $$
+     Y_0 = 0
+     $$
    - **Block Processing:**  
-     For each 128-bit block \( S_i \) (which includes blocks derived from the AAD, ciphertext, and the appended length block), compute:
+     For each 128-bit block $$S_i$$ (which includes blocks derived from the AAD, the ciphertext, and the appended length block), compute:  
      $$
      Y_i = (Y_{i-1} \oplus S_i) \otimes H
      $$
      where:
-     - \( \oplus \) denotes the XOR operation (a bitwise “add without carrying”).
-     - \( \otimes \) denotes multiplication in the finite field GF(\(2^{128}\)).
+     - $$\oplus$$ denotes the XOR operation (a bitwise “add without carrying”).
+     - $$\otimes$$ denotes multiplication in the finite field $$\mathrm{GF}(2^{128})$$.
 
-4. **Understanding GF(\(2^{128}\)):**
+4. **Understanding $$\mathrm{GF}(2^{128})$$:**
    - **Finite Field:**  
-     GF(\(2^{128}\)) is a finite field containing exactly \( 2^{128} \) elements, with each element represented as a 128-bit binary number.
-   - **Addition in GF(\(2^{128}\)):**  
+     $$\mathrm{GF}(2^{128})$$ is a finite field containing exactly $$2^{128}$$ elements, with each element represented as a 128-bit binary number.
+   - **Addition in $$\mathrm{GF}(2^{128})$$:**  
      Instead of standard addition, numbers are added using the XOR operation—each corresponding bit is added without carrying.
-   - **Multiplication in GF(\(2^{128}\)):**  
-     Multiplication is carried out by interpreting the 128-bit numbers as polynomials with binary coefficients (0 or 1). The resulting product is then reduced modulo an irreducible polynomial (commonly):
+   - **Multiplication in $$\mathrm{GF}(2^{128})$$:**  
+     Multiplication is carried out by interpreting the 128-bit numbers as polynomials with binary coefficients (0 or 1). The resulting product is then reduced modulo an irreducible polynomial (commonly):  
      $$
      x^{128} + x^7 + x^2 + x + 1
-     $$
+     $$  
      This reduction ensures that the product remains a 128-bit number.
    - **Why It Matters:**  
-     This arithmetic thoroughly mixes the bits so that even the smallest change in the input produces a dramatically different output, which is crucial for detecting any tampering.
+     This arithmetic thoroughly mixes the bits so that even the smallest change in the input produces a dramatically different output—a key property for detecting any tampering.
 
 5. **Tag Formation:**  
-   After all blocks have been processed, the final GHASH result (i.e., the combined fingerprint) is XORed with an encrypted counter block (derived from the IV) to form the final authentication tag. This tag is then truncated (if necessary) to the desired length and sent along with the ciphertext. Upon decryption, the receiver recalculates the GHASH and verifies that the tag matches, confirming data integrity and authenticity.
+   After all blocks have been processed, the final GHASH result (i.e., the combined fingerprint) is XORed with an encrypted counter block (derived from the IV) to form the final authentication tag. The tag is then truncated (if necessary) to the desired length and sent along with the ciphertext. Upon decryption, the receiver recalculates the GHASH and verifies that the tag matches, confirming data integrity and authenticity.
 
----
 
 This revised documentation clarifies both the encryption (CTR mode) flow and the GHASH authentication process, including the explicit calculation for incorporating the bit-lengths of the AAD and ciphertext.
 
