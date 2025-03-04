@@ -119,7 +119,7 @@ Below is the revised Markdown content with fixes to the functions so that the ma
   Start with an initial value, `Y₀ = 0`.
 
 - **Block Processing:**  
-  For each 128-bit block \(S_i\) (covering blocks derived from both the AAD and the ciphertext, plus one extra block that encodes their lengths), compute:
+  For each 128-bit block $$S_i$$ (covering blocks derived from both the AAD and the ciphertext, plus one extra block that encodes their lengths), compute:
   
   $$Y_i = (Y_{i-1} \oplus S_i) \cdot H$$
 
