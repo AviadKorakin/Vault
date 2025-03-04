@@ -124,8 +124,6 @@ GHASH functions as a “fingerprint” for your encrypted data and any associate
    After all blocks have been processed, the final GHASH result (i.e., the combined fingerprint) is XORed with an encrypted counter block (derived from the IV) to form the final authentication tag. The tag is then truncated (if necessary) to the desired length and sent along with the ciphertext. Upon decryption, the receiver recalculates the GHASH and verifies that the tag matches, confirming data integrity and authenticity.
 
 
-This revised documentation clarifies both the encryption (CTR mode) flow and the GHASH authentication process, including the explicit calculation for incorporating the bit-lengths of the AAD and ciphertext.
-
 
 
 ### 4. Output
