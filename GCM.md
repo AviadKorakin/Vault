@@ -132,9 +132,7 @@ GHASH functions as a “fingerprint” for your encrypted data and any associate
 3. **Iterative Computation:**  
    - **Initialization:**  
      Start with an initial accumulator:  
-     $$
-     Y_0 = 0
-     $$
+     $$Y_0 = 0$$
    - **Block Processing:**  
      For each 128-bit block $$S_i$$ (which includes blocks derived from the AAD, the ciphertext, and the appended length block), compute:  
        $$Y_i = (Y_{i-1} \oplus S_i) \otimes H$$
