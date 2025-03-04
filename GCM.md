@@ -67,7 +67,7 @@ This diagram gives a visual overview of the GCM protocol, showing how encryption
 - **Hash Subkey (H):**  
   Compute the hash subkey by encrypting an all-zero 128-bit block:
 
-**H = AES(K, 0^128)**
+**H = AES(K, $$0^{128}$$)**
 
 This subkey is then used in the GHASH function.
 
