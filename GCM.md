@@ -50,20 +50,24 @@ This diagram gives a visual overview of the GCM protocol, showing how encryption
 ## ⚙️ Detailed Operation
 
 ### 1. Inputs
+
 - **Secret Key (K):**  
   The encryption key used with the block cipher (e.g., AES).
+
 - **Initialization Vector (IV):**  
   A unique nonce (ideally 96 bits) that ensures each encryption operation is unique.
+
 - **Plaintext (P):**  
   The original data to be encrypted.
+
 - **Additional Authenticated Data (AAD):**  
-  Data that is authenticated (its integrity is verified) but not encrypted (e.g., header information).
+  Data that is not encrypted but is still authenticated. AAD typically includes protocol headers, metadata, timestamps, or any other associated information that must remain in plaintext while still being protected against tampering. During the authentication process, AAD is processed alongside the ciphertext within the GHASH function so that any modifications to this data can be detected upon decryption, **in Our Program we can see that share the image 3rd party using aad timestamp to validate its being opened around 15 mins from sending**.
 
 ### 2. Preprocessing
 - **Hash Subkey (H):**  
   Compute the hash subkey by encrypting an all-zero 128-bit block:
 
-**H = AES(K, 0^128)**
+**H = AES(K, $$0^{128}$$)**
 
 This subkey is then used in the GHASH function.
 
@@ -76,36 +80,90 @@ This subkey is then used in the GHASH function.
   Each plaintext block is XORed with the corresponding keystream block, producing the ciphertext.
 
 ### 4. GHASH Authentication
-- **Purpose:**  
-  GHASH is used to ensure that the ciphertext and AAD remain unaltered.
-- **Detailed Process:**  
-  1. **Data Preparation:**  
-     - The ciphertext and AAD are divided into 128-bit blocks. Incomplete blocks are padded with zeros.
-  2. **Hash Subkey Calculation:**  
-     - The hash subkey `H` (calculated earlier) is used for all subsequent operations.
-  3. **Iterative Computation:**  
-     - Begin with `Y0 = 0`. For each block `Si` (which includes all AAD blocks, ciphertext blocks, and a block encoding the lengths of AAD and ciphertext), compute:
-       ```
-       Yi = (Yi-1 ⊕ Si) · H
-       ```
-       where the multiplication is carried out in the finite field GF(2^128).
-  4. **Authentication Tag Generation:**  
-     - The final value, after processing all blocks, is combined with an encrypted counter block (derived from the IV) and truncated to produce the authentication tag `T`.
 
-### 5. Output
-- **Ciphertext (C):**  
-  The encrypted version of the plaintext.
-- **Authentication Tag (T):**  
-  A tag that verifies the integrity and authenticity of both the ciphertext and AAD.
+**Purpose (Why We Need GHASH):**  
+Think of GHASH like a “fingerprint” maker for your encrypted data. It guarantees that if anyone changes even a single bit of the ciphertext or the associated data (AAD), the fingerprint will no longer match. This lets the receiver detect any tampering.
+
+**Detailed Process (How GHASH Works):**
+
+1. **Data Preparation**  
+   - The ciphertext (the encrypted message) and any AAD (extra data you want protected, such as headers) are cut into 128-bit pieces.  
+   - If a piece is shorter than 128 bits, zeros are added to make it a full block.
+
+2. **Hash Subkey Calculation**  
+   - Earlier in the GCM process, we generated a special key called `H`. GHASH uses this key for all its calculations.  
+   - You can think of `H` as a unique ingredient that ensures your “fingerprint” is tied to the main encryption key.
+
+Below is the revised Markdown content with fixes to the functions so that the math displays correctly. In this version, I’ve replaced the display math delimiters with double dollar signs for better compatibility, while keeping the code and structure intact:
 
 ---
 
+### 1. Inputs
+
+- **Secret Key (K):**  
+  The encryption key used with the block cipher (e.g., AES).
+
+- **Initialization Vector (IV):**  
+  A unique nonce (ideally 96 bits) that ensures each encryption operation is unique.
+
+- **Plaintext (P):**  
+  The original data to be encrypted.
+
+- **Additional Authenticated Data (AAD):**  
+  Data that is not encrypted but is still authenticated. AAD typically includes protocol headers, metadata, timestamps, or any other associated information that must remain in plaintext while still being protected against tampering. During the authentication process, AAD is processed alongside the ciphertext within the GHASH function so that any modifications to this data can be detected upon decryption.
+
+---
+
+### 3. Iterative Computation
+- **Initial Value:**  
+  Start with an initial value, `Y₀ = 0`.
+
+- **Block Processing:**  
+  For each 128-bit block $$S_i$$ (covering blocks derived from both the AAD and the ciphertext, plus one extra block that encodes their lengths), compute:
+  
+  $$Y_i = (Y_{i-1} \oplus S_i) \cdot H$$
+
+  where:
+- **$$\oplus$$** represents the XOR operator (a bitwise “add without carrying”).
+- **$$\cdot$$** denotes multiplication in the finite field GF(2^128).
+
+
+- **Understanding GF($$2^{128}$$):**
+  - **Finite Field:**  
+    GF($$2^{128}$$) is a finite field containing exactly $$2^128$$) elements, where each element is represented as a 128-bit binary number.
+  - **Addition in GF($$2^{128}$$):**  
+    Instead of standard addition, numbers are added using the XOR operation—each bit is added without carrying.
+  - **Multiplication in GF($$2^{128}$$):**  
+    Multiplication is performed by treating the 128-bit numbers as polynomials with coefficients in GF(2) (each coefficient being 0 or 1). The resulting product is then reduced modulo an irreducible polynomial (commonly $$x^{128} + x^7 + x^2 + x + 1$$), ensuring the result remains a 128-bit number.
+  - **Why It Matters:**  
+    This method thoroughly mixes the bits so that even a tiny change in the input produces a dramatically different output—a key property for detecting any tampering with the data.
+
+---
+
+### 4. Authentication Tag Generation
+- After processing every block, the final GHASH result (the combined fingerprint) is **XORed** with an **encrypted counter block** (derived from the IV).
+- The output of this step is then shortened (truncated) to produce the final **authentication tag** (often called “tag” or “ICV”).
+- When the receiver decrypts, they re-run the GHASH process; if the tag they compute matches the one sent, it verifies that the data has not been altered.
+
+---
+
+This updated version should now display the functions correctly in your file.
+
+### 5. Output
+
+- **Ciphertext (C):**  
+  The encrypted version of the original plaintext. If an attacker can’t break the encryption key, they can’t read the contents.
+
+- **Authentication Tag (T):**  
+  A small piece of data (often 16 bytes or less) that proves the ciphertext and AAD haven’t been tampered with. If even one bit of the message changes, the tag won’t match.
+
+---
 ## 🗺️ Mermaid Diagram of GCM Flow
 
 ```mermaid
 flowchart TD
     A[Start] --> B[Input: Key, IV, Plaintext, AAD]
-    B --> C[Compute Hash Subkey<br>H = AES(K, 0^128)]
+    B --> C[Compute Hash Subkey<br>H = AES- K, 0^128]
     C --> D[Divide Plaintext into 128-bit Blocks]
     D --> E[Generate Counter Blocks<br>from IV & Increment Function]
     E --> F[Encrypt Counters with AES<br>to Create Keystream]
