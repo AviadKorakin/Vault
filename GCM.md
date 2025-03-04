@@ -126,9 +126,7 @@ GHASH functions as a “fingerprint” for your encrypted data and any associate
 
 2. **Hash Subkey Calculation:**  
    A hash subkey $$H$$ is computed by encrypting an all-zero 128-bit block with the AES key:  
-   $$
-   H = \text{AES}(K, 0^{128})
-   $$  
+     $$H = \text{AES}(K, 0^{128})$$  
    This subkey is then used throughout the GHASH computation.
 
 3. **Iterative Computation:**  
@@ -139,9 +137,7 @@ GHASH functions as a “fingerprint” for your encrypted data and any associate
      $$
    - **Block Processing:**  
      For each 128-bit block $$S_i$$ (which includes blocks derived from the AAD, the ciphertext, and the appended length block), compute:  
-     $$
-     Y_i = (Y_{i-1} \oplus S_i) \otimes H
-     $$
+       $$Y_i = (Y_{i-1} \oplus S_i) \otimes H$$
      where:
      - $$\oplus$$ denotes the XOR operation (a bitwise “add without carrying”).
      - $$\otimes$$ denotes multiplication in the finite field $$\mathrm{GF}(2^{128})$$.
@@ -153,9 +149,7 @@ GHASH functions as a “fingerprint” for your encrypted data and any associate
      Instead of standard addition, numbers are added using the XOR operation—each corresponding bit is added without carrying.
    - **Multiplication in $$\mathrm{GF}(2^{128})$$:**  
      Multiplication is carried out by interpreting the 128-bit numbers as polynomials with binary coefficients (0 or 1). The resulting product is then reduced modulo an irreducible polynomial (commonly):  
-     $$
-     x^{128} + x^7 + x^2 + x + 1
-     $$  
+       $$x^{128} + x^7 + x^2 + x + 1$$  
      This reduction ensures that the product remains a 128-bit number.
    - **Why It Matters:**  
      This arithmetic thoroughly mixes the bits so that even the smallest change in the input produces a dramatically different output—a key property for detecting any tampering.
