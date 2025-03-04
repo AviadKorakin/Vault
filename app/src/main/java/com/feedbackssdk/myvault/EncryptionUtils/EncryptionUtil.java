@@ -47,7 +47,7 @@ public class EncryptionUtil {
     private static final String KEY_ALIAS = "MyVaultKey";
     // Constant representing the Android Keystore type.
     private static final String ANDROID_KEYSTORE = "AndroidKeyStore";
-    // Recommended IV length for GCM mode in bytes (12 bytes is standard).
+    // Recommended IV length for GCM mode in bytes (12 bytes=96BITS is standard).
     private static final int GCM_IV_LENGTH = 12;
     // Authentication tag length for GCM mode in bits.
     private static final int GCM_TAG_LENGTH = 128;
@@ -214,8 +214,8 @@ public class EncryptionUtil {
 
     /**
      * Encrypts the provided data for sharing using an ephemeral AES key with AES/GCM/NoPadding.
-     * A header containing the current timestamp is prepended to the data, and both the encrypted data
-     * and the ephemeral key (encoded in Base64) are returned encapsulated in an EncryptionResult.
+     * The current time is quantized to a 30-minute window and used as AAD.
+     * The output contains the IV and ciphertext, Base64-encoded.
      *
      * @param data The plaintext byte array to encrypt.
      * @return An EncryptionResult containing the Base64-encoded combined data and the ephemeral key.
@@ -232,19 +232,21 @@ public class EncryptionUtil {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             byte[] iv = cipher.getIV();
 
-            // 3) Encrypt the data.
+            // 3) Quantize current time to the nearest 15 minutes.
+            long currentTime = System.currentTimeMillis();
+            long quantizedTime = (currentTime / 900_000L) * 900_000L; // 1_800_000 ms = 15 minutes
+            String aadStr = String.valueOf(quantizedTime);
+            byte[] aadBytes = aadStr.getBytes(StandardCharsets.UTF_8);
+            // Use the quantized time as AAD.
+            cipher.updateAAD(aadBytes);
+
+            // 4) Encrypt the data.
             byte[] encryptedBytes = cipher.doFinal(data);
 
-            // 4) Prepend a header with the current timestamp (in milliseconds) followed by a newline.
-            long timestamp = System.currentTimeMillis();
-            String header = timestamp + "\n";
-            byte[] headerBytes = header.getBytes(StandardCharsets.UTF_8);
-
-            // 5) Combine header, IV, and encrypted bytes.
-            byte[] combined = new byte[headerBytes.length + iv.length + encryptedBytes.length];
-            System.arraycopy(headerBytes, 0, combined, 0, headerBytes.length);
-            System.arraycopy(iv, 0, combined, headerBytes.length, iv.length);
-            System.arraycopy(encryptedBytes, 0, combined, headerBytes.length + iv.length, encryptedBytes.length);
+            // 5) Combine IV and encrypted bytes (no header).
+            byte[] combined = new byte[iv.length + encryptedBytes.length];
+            System.arraycopy(iv, 0, combined, 0, iv.length);
+            System.arraycopy(encryptedBytes, 0, combined, iv.length, encryptedBytes.length);
 
             // 6) Base64-encode the combined data.
             String encryptedDataBase64 = Base64.encodeToString(combined, Base64.NO_WRAP);
@@ -261,67 +263,48 @@ public class EncryptionUtil {
         }
     }
 
+
     /**
      * Decrypts data that was encrypted for sharing using a provided Base64-encoded ephemeral key.
-     * The method expects the encrypted data to contain a header with a timestamp, followed by the IV and ciphertext.
-     * It also validates that the data has not expired (older than 15 minutes).
+     * The method expects the encrypted data to contain the IV followed by the ciphertext.
+     * It uses the current quantized time (30-minute window) as AAD, and decryption will only succeed
+     * if the message is decrypted within the same 30-minute window.
      *
-     * @param base64EncryptedData The Base64-encoded string containing the header, IV, and ciphertext.
+     * @param base64EncryptedData The Base64-encoded string containing the IV and ciphertext.
      * @param code The Base64-encoded ephemeral key used during encryption.
-     * @return The decrypted byte array, or null if the data is expired or decryption fails.
+     * @return The decrypted byte array, or null if decryption fails.
      */
     public static byte[] decryptDataForShareWithCode(String base64EncryptedData, String code) {
         try {
-            // 1) Decode the Base64 string to retrieve header + IV + ciphertext.
+            // 1) Decode the Base64 string to retrieve IV + ciphertext.
             byte[] combined = Base64.decode(base64EncryptedData, Base64.NO_WRAP);
 
-            // 2) Locate the newline marking the end of the header.
-            int headerEnd = -1;
-            for (int i = 0; i < combined.length; i++) {
-                if (combined[i] == '\n') {
-                    headerEnd = i;
-                    break;
-                }
+            // 2) Extract the IV (GCM_IV_LENGTH bytes) and ciphertext.
+            if (combined.length < GCM_IV_LENGTH) {
+                throw new IllegalStateException("Insufficient data for IV.");
             }
-            if (headerEnd == -1) {
-                throw new IllegalStateException("Missing header delimiter (newline).");
-            }
+            byte[] iv = Arrays.copyOfRange(combined, 0, GCM_IV_LENGTH);
+            byte[] cipherText = Arrays.copyOfRange(combined, GCM_IV_LENGTH, combined.length);
 
-            // 3) Parse the header to extract the timestamp.
-            String header = new String(combined, 0, headerEnd, StandardCharsets.UTF_8);
-            long timestamp = Long.parseLong(header.trim());
+            // 3) Compute current quantized time to be used as AAD.
             long currentTime = System.currentTimeMillis();
-
-            // Validate expiration: if older than 15 minutes, return null.
-            if (currentTime - timestamp > 900_000) { // 15 minutes in milliseconds
-                return null;
-            }
+            long quantizedTime = (currentTime / 900_000L) * 900_000L;
+            String aadStr = String.valueOf(quantizedTime);
+            byte[] aadBytes = aadStr.getBytes(StandardCharsets.UTF_8);
 
             // 4) Decode the Base64-encoded ephemeral key.
             byte[] keyBytes = Base64.decode(code, Base64.NO_WRAP);
             SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
 
-            // 5) Extract the IV (GCM_IV_LENGTH bytes).
-            int ivLength = GCM_IV_LENGTH;
-            int offset = headerEnd + 1;  // Position after the newline.
-            if (combined.length < offset + ivLength) {
-                throw new IllegalStateException("Insufficient data for IV.");
-            }
-            byte[] iv = new byte[ivLength];
-            System.arraycopy(combined, offset, iv, 0, ivLength);
-            offset += ivLength;
-
-            // 6) The remainder is the ciphertext.
-            int cipherTextLength = combined.length - offset;
-            byte[] cipherText = new byte[cipherTextLength];
-            System.arraycopy(combined, offset, cipherText, 0, cipherTextLength);
-
-            // 7) Initialize Cipher for AES/GCM/NoPadding with the ephemeral key.
+            // 5) Initialize Cipher for AES/GCM/NoPadding with the ephemeral key.
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
             cipher.init(Cipher.DECRYPT_MODE, secretKey, spec);
 
-            // 8) Decrypt and return the resulting byte array.
+            // 6) Use the quantized time as AAD.
+            cipher.updateAAD(aadBytes);
+
+            // 7) Decrypt and return the resulting byte array.
             return cipher.doFinal(cipherText);
 
         } catch (Exception e) {
