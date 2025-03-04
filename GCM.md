@@ -106,9 +106,7 @@ Below is the revised documentation using double dollar signs for all math expres
 
 3. **Ciphertext Production:**  
    Each plaintext block is XORed with the corresponding keystream block to produce the ciphertext block. This is represented as:  
-   $$
-   C_i = P_i \oplus \text{Keystream}_i
-   $$
+   $$C_i = P_i \oplus \text{Keystream}_i$$
 
 
 ### 4. GHASH Authentication
@@ -123,9 +121,7 @@ GHASH functions as a “fingerprint” for your encrypted data and any associate
      Both the ciphertext and any AAD (for example, protocol headers) are split into 128-bit blocks. If the final block in either sequence is shorter than 128 bits, it is padded with zeros.
    - **Length Block:**  
      An extra block is appended that encodes the bit-lengths of the AAD and the ciphertext. This extra block is represented as:  
-     $$
-     \text{len}(A) \, \| \, \text{len}(C)
-     $$  
+      $$\text{len}(A) \, \| \, \text{len}(C)$$  
      where the first 64 bits represent the length of the AAD in bits and the next 64 bits represent the length of the ciphertext in bits.
 
 2. **Hash Subkey Calculation:**  
